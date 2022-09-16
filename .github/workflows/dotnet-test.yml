@@ -1,4 +1,4 @@
-name: Build .NET 
+name: Test .NET 
 
 on:
   [push, pull_request]
@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - shell: pwsh
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
@@ -18,3 +19,11 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: Xunit Test
+      env:
+        XUNIT_CONNECTION_STRING: ${{ secrets.UNITTESTCONNECTIONSTRING }}
+      run: |
+        dotnet user-secrets set "ConnectionStrings:Default" "${{ secrets.UNITTESTCONNECTIONSTRING }}"
+        pwd
+        ls -a
+        dotnet test
